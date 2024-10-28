@@ -1,10 +1,17 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 
 defineProps({
     projects: Object,
 });
+
+const deletForm = useForm({});
+const deleteProject = (projectId) => {
+    if (confirm("Are you sure you want to delete this project?")) {
+        deletForm.delete(route("projects.destroy", projectId));
+    }
+};
 </script>
 <template>
     <Head title="Projects Index" />
@@ -65,7 +72,21 @@ defineProps({
                                         class="w-12 h-12 rounded-full"
                                     />
                                 </td>
-                                <td class="px-6 py-4">Edit/Delete</td>
+                                <td class="px-6 py-4">
+                                    <Link
+                                        :href="
+                                            route('projects.edit', project.id)
+                                        "
+                                        class="font-medium text-blue-500 hover:text-blue-700 mr-2"
+                                        >Edit</Link
+                                    >
+                                    <button
+                                        @click="deleteProject(project.id)"
+                                        class="font-medium text-red-500 hover:text-red-700 mr-2"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

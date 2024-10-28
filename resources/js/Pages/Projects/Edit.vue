@@ -4,32 +4,39 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, useForm, router } from "@inertiajs/vue3";
 
-defineProps({
+const props = defineProps({
     skills: Array,
+    project: Object,
 });
 
 const form = useForm({
-    name: "",
+    name: props.project?.name,
     image: null,
-    skill_id: "",
-    project_url: "",
+    skill_id: props.project?.skill_id,
+    project_url: props.project?.project_url,
 });
 
 const submit = () => {
-    form.post(route("projects.store"));
+    router.post(`/projects/${props.project.id}`, {
+        _method: "put",
+        name: form.name,
+        image: form.image,
+        skill_id: form.skill_id,
+        project_url: form.project_url,
+    });
 };
 </script>
 <template>
-    <Head title="New Project" />
+    <Head title="Edit Project" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
             >
-                New Project
+                Edit Project
             </h2>
         </template>
         <div class="py-12">
@@ -53,7 +60,7 @@ const submit = () => {
                         </select>
                         <InputError
                             class="mt-2"
-                            :message="form.errors.skill_id"
+                            :message="$page.props.errors.skill_id"
                         />
                     </div>
                     <div>
@@ -68,7 +75,10 @@ const submit = () => {
                             autocomplete="name"
                         />
 
-                        <InputError class="mt-2" :message="form.errors.name" />
+                        <InputError
+                            class="mt-2"
+                            :message="$page.props.errors.name"
+                        />
                     </div>
                     <div>
                         <InputLabel for="project_url" value="URL" />
@@ -83,7 +93,7 @@ const submit = () => {
 
                         <InputError
                             class="mt-2"
-                            :message="form.errors.project_url"
+                            :message="$page.props.errors.project_url"
                         />
                     </div>
                     <div class="mt-2">
@@ -96,7 +106,10 @@ const submit = () => {
                             @input="form.image = $event.target.files[0]"
                         />
 
-                        <InputError class="mt-2" :message="form.errors.image" />
+                        <InputError
+                            class="mt-2"
+                            :message="$page.props.errors.image"
+                        />
                     </div>
 
                     <div class="mt-4 flex items-center justify-end">
@@ -105,7 +118,7 @@ const submit = () => {
                             :class="{ 'opacity-25': form.processing }"
                             :disabled="form.processing"
                         >
-                            Save
+                            Update
                         </PrimaryButton>
                     </div>
                 </form>
